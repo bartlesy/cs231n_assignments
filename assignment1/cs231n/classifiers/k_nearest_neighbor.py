@@ -17,7 +17,16 @@ class KNearestNeighbor(object):
     - y: A numpy array of shape (N,) containing the training labels, where
          y[i] is the label for X[i].
     """
-    self.X_train = X
+On branch master
+Your branch is up-to-date with 'origin/master'.
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	modified:   k_nearest_neighbor.py
+	modified:   ../../knn.ipynb
+
+no changes added to commit (use "git add" and/or "git commit -a")
     self.y_train = y
     
   def predict(self, X, k=1, num_loops=0):
