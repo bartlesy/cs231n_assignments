@@ -29,7 +29,12 @@ def softmax_loss_naive(W, X, y, reg):
   # here, it is easy to run into numeric instability. Don't forget the        #
   # regularization!                                                           #
   #############################################################################
-  pass
+  fx = X.dot(W)
+  fx -= fx.max()
+  correct_idxs = (range(y.shape[0]), y)
+  loss = (np.exp(fx) / (fx.sum(axis=1))).mean()
+
+  dW = y - fx
   #############################################################################
   #                          END OF YOUR CODE                                 #
   #############################################################################
