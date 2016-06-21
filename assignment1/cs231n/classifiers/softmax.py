@@ -22,6 +22,8 @@ def softmax_loss_naive(W, X, y, reg):
   # Initialize the loss and gradient to zero.
   loss = 0.0
   dW = np.zeros_like(W)
+  n_train = y.shape[0]
+  n_classes = W.shape[1]
 
   #############################################################################
   # TODO: Compute the softmax loss and its gradient using explicit loops.     #
@@ -29,12 +31,18 @@ def softmax_loss_naive(W, X, y, reg):
   # here, it is easy to run into numeric instability. Don't forget the        #
   # regularization!                                                           #
   #############################################################################
-  fx = X.dot(W)
-  fx -= fx.max()
-  correct_idxs = (range(y.shape[0]), y)
-  loss = (np.exp(fx) / (fx.sum(axis=1))).mean()
+  for i in range(n_train):
+    fx = X[i].dot(W)
+    fx -= fx.max()
 
-  dW = y - fx
+    fx = np.exp(fx) / np.exp(fx).sum()
+    loss += -np.log(fx[y[i]])
+    deriv_i = fx.reshape((n_classes, 1)) * X[i]
+    deriv_i[y[i]] -= X[i]
+    dW += deriv_i.T
+
+  loss = loss / n_train + 0.5 * reg * np.sum(W * W)
+  dW = dW / n_train + reg * W
   #############################################################################
   #                          END OF YOUR CODE                                 #
   #############################################################################
@@ -51,6 +59,7 @@ def softmax_loss_vectorized(W, X, y, reg):
   # Initialize the loss and gradient to zero.
   loss = 0.0
   dW = np.zeros_like(W)
+  n_train = y.shape[0]
 
   #############################################################################
   # TODO: Compute the softmax loss and its gradient using no explicit loops.  #
@@ -58,10 +67,18 @@ def softmax_loss_vectorized(W, X, y, reg):
   # here, it is easy to run into numeric instability. Don't forget the        #
   # regularization!                                                           #
   #############################################################################
-  pass
+  fx = X.dot(W)
+  fx -= fx.max()
+  correct_idxs = (range(y.shape[0]), y)
+  fx = np.exp(fx) / np.exp(fx).sum(axis=1, keepdims=True)
+
+  loss = -np.log(fx[correct_idxs]).mean()
+  loss += 0.5 * reg * np.sum(W * W)
+
+  fx[correct_idxs] -= 1
+  dW = X.T.dot(fx) / n_train + reg * W
   #############################################################################
   #                          END OF YOUR CODE                                 #
   #############################################################################
-
   return loss, dW
 
