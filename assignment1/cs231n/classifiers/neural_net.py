@@ -74,11 +74,12 @@ class TwoLayerNet(object):
     # Store the result in the scores variable, which should be an array of      #
     # shape (N, C).                                                             #
     #############################################################################
-    pass
+    h0_out = np.maximum(X.dot(W1) + b1, 0)
+    scores = h0_out.dot(W2) + b2
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
-    
+
     # If the targets are not given then jump out, we're done
     if y is None:
       return scores
@@ -92,7 +93,14 @@ class TwoLayerNet(object):
     # classifier loss. So that your results match ours, multiply the            #
     # regularization loss by 0.5                                                #
     #############################################################################
-    pass
+    correct_idxs = (range(y.shape[0]), y)
+    out_fx = scores - scores.max()
+    fx = np.exp(out_fx) / np.exp(out_fx).sum(axis=1, keepdims=True)
+    # data loss
+    loss = -np.log(fx[correct_idxs]).mean()
+    # l2 loss on the weights
+    loss += 0.5 * reg * np.sum(W2 * W2)
+    loss += 0.5 * reg * np.sum(W1 * W1)
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
@@ -104,7 +112,9 @@ class TwoLayerNet(object):
     # and biases. Store the results in the grads dictionary. For example,       #
     # grads['W1'] should store the gradient on W1, and be a matrix of same size #
     #############################################################################
-    pass
+    fx[correct_idxs] -= 1
+    grads['W2'] = h0_out.T.dot(fx) / N + reg * W2
+    grads['W1'] = W1.dot(grads['W2']) / N + reg * W1
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
